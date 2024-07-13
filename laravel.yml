@@ -22,7 +22,7 @@ services:
       - app-data:/var/www/html
 
   app:
-    image: ${APP_REGISTRY}:branch
+    image: ${REGISTRY}:${BRANCH}
     restart: unless-stopped
     volumes:
       - app-data:/var/www/html
