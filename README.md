@@ -3,10 +3,10 @@
 Create an .env file:
 
 ```
-APP_NAME=my-service
+NAME=my-service
+REGISTRY=my-app-registry
+BRANCH=main
 DOMAINS=example.com,alias.example.com
-APP_REGISTRY=my-app-registry
-APP_BRANCH=main
 ```
 
 Use this docker-compose.yml
