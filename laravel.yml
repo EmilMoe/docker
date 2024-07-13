@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  httpd:
+    image: registry.gitlab.com/cloudmonitor/images/caddy:latest
+    restart: unless-stopped
+    environment:
+      - WEBROOT=/var/www/html/public
+    depends_on:
+      - app
+    links:
+      - app
+    networks:
+      - app-network
+      - web
+    labels:
+      - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAINS}`)
+      - traefik.http.routers.${SERVICE}.entrypoints=websecure
+      - traefik.http.routers.${SERVICE}.tls=true
+      - traefik.http.routers.${SERVICE}.tls.certresolver=leresolver
+    volumes:
+      - app-data:/var/www/html
+
+  app:
+    image: ${APP_REGISTRY}:branch
+    restart: unless-stopped
+    volumes:
+      - app-data:/var/www/html
+    networks:
+      - app-network
+
+  scheduler:
+    image: registry.gitlab.com/cloudmonitor/images/laravel-scheduler:latest
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - app-data:/var/www/html
+    networks:
+      - app-network
+
+  worker:
+    image: registry.gitlab.com/cloudmonitor/images/laravel-worker:latest
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - app-data:/var/www/html
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+  web:
+    external: true
+
+volumes:
+  app-data:
